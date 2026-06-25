@@ -1,0 +1,53 @@
+SECTION 1.
+
+Q1 :  Import Mode loads the data from the source into Power BI's in-memory storage (VertiPaq engine).
+      This provides fast report performance, full DAX functionality, and allows users to work with the data even when the original source is unavailable.
+      However, the data must be refreshed to reflect any changes in the source.
+
+      DirectQuery Mode does not store the data in Power BI.
+      Instead, Power BI sends queries directly to the data source whenever a user interacts with the report.
+      This enables access to near real-time data and supports very large datasets,
+      but report performance depends on the speed of the underlying data source and some DAX features may be limited
+
+      For a static CSV file, Import Mode is the most suitable option because the data does not change frequently and does not require real-time access. Import Mode offers faster performance
+
+Q2.   If a Sales column is stored as the Text data type, a Card visual cannot correctly perform numerical calculations such as Sum, Average,
+      or Total Sales. The values may be treated as text strings instead of numbers, causing the Card visual to display incorrect results,
+      show a count of records instead of the sales total, or generate an error.
+
+      To fix this issue, the data type should be changed from Text to a numeric type such as Whole Number or Decimal Number.
+      The best place to correct this is in Power Query Editor during the data preparation and transformation stage before loading the data into the Power BI model.
+
+Q3.  To change a bar chart's sort order from alphabetical to descending by value in Power BI, select the bar chart visual, then click the More Options (three dots "...")
+     menu located in the top-right corner of the visual. Choose Sort by, select the value field (such as Sales), and then select Descending.
+
+Q4.  Filtering in Power Query is applied during the data preparation stage before the data is loaded into the Power BI model.
+     Records removed in Power Query are excluded from the dataset entirely, so all report visuals, calculations, and measures only work with the filtered data.
+     As a result, every visual in the report is affected.
+
+     A Visual-Level Top N Filter is applied only to a specific visual after the data has been loaded into the model.
+     It limits the displayed items in that visual, such as showing the Top 10 products by sales, while the underlying dataset remains unchanged.
+     Other visuals in the report continue to use the complete dataset unless separate filters are applied to them.
+
+     Therefore, Power Query filtering affects the entire report dataset, whereas a Visual-Level Top N filter affects only the selected visual and does not impact other report visuals.
+
+Q5.  DAX CODE :  
+    Sales % of Total =
+      DIVIDE(
+        SUM(Sales[SalesAmount]),
+        CALCULATE(
+        SUM(Sales[SalesAmount]),
+        ALL(Sales[Region])
+                 )
+            )
+
+     After creating the measure, format it as a Percentage and use it in the Values field of the bar chart instead of the Sales Amount field.
+     The chart will then display each region's contribution to total sales as a percentage rather than an absolute value.
+
+Q6.  Hardcoded file paths in a Power BI (.pbix) file point to a specific location on the creator's computer, such as C:\Users\Yash\Documents\SalesData.csv.
+     When the PBIX file is shared with another user, that exact file path usually does not exist on their computer.
+     As a result, Power BI cannot locate the data source, causing refresh failures and broken reports.
+
+    To make a report portable, avoid using machine-specific file paths. Instead, store data files in a shared location such as a network drive,
+    SharePoint, or OneDrive that all users can access. Another best practice is to use Power Query parameters so users can easily update the data source location without modifying the report logic.
+    This ensures that the report can be opened and refreshed successfully by different users across different environments.
